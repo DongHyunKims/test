@@ -27,8 +27,9 @@ router.get('/', function(req, res) {
       if(err) res.status(500).json(err);
       if(!users.length) {
           res.render('index',{err:"Not found users"});
+      }else{
+          res.render('index', {users : users, user: users[0]});
       }
-      res.render('index', {users : users, user: users[0]});
   });
 
 

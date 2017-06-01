@@ -3,6 +3,7 @@
  */
 (function(){
         let cnt = 0;
+        const MAX_SIZE = 2 * 1024 * 1000;
         const {$selector} = utility;
         const elements = {
             nameInput : $selector(".nameInput"),
@@ -15,8 +16,6 @@
             previewImg : $selector("#previewImg"),
 
 
-
-
         };
 
 
@@ -24,11 +23,28 @@
 
 
         fileInput.addEventListener("change",()=>{
+            const file = fileInput.files[0];
             const reader = new FileReader();
+
+            console.log("file",file);
+
+            let { size } = file;
+
+            if(size > MAX_SIZE){
+                alert("2MB 보다 작은 파일을 업로드 하세요.");
+                fileInput.value = "";
+                return;
+            }
 
             reader.addEventListener("load",(event)=>{
                 previewImg.src = reader.result;
             },false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }else{
+                previewImg.src = "";
+            }
         });
 
 
@@ -36,15 +52,11 @@
             //fileInput
 
             const data = {};
-
             data.name = nameInput.value;
             data.tag = tagInput.value;
             data.img = fileInput.files[0];
             const formData = utility.createFormData(data);
             utility.runAjaxData(reqListener,"POST",config.DEFAULT_URL + "/",formData);
-
-
-
 
         });
 
@@ -53,6 +65,7 @@
             nameInput.value = "";
             tagInput.value = "";
             fileInput.value = "";
+            previewImg.src = "";
 
             const { response } = res.currentTarget;
 
@@ -61,15 +74,12 @@
             //console.log("user",users);
 
             let renderTemplate = $selector("#nameListTemplate").innerText;
-
             renderTemplate = renderTemplate.replace("{{nameList}}",users.map((val)=>{
                 let {_id ,name } = val;
                 return "<li id=" + _id + " class=userName >" + name+ "</li>"
             }).join(""));
 
             nameListArea.innerHTML = renderTemplate;
-
-
         }
 
         nameListArea.addEventListener("click", (event)=>{
@@ -80,8 +90,6 @@
             if(nodeName === "LI"){
 
                 if(id === "addName" ){
-
-
 
 
                 }else{
@@ -98,7 +106,6 @@
 
 
         function getUserListener(res){
-
 
             const { response } = res.currentTarget;
             const user = JSON.parse(response);
