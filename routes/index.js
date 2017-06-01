@@ -8,6 +8,8 @@ router.use(express.static('public'));
 router.use(bodyParser.urlencoded({extended : true}));
 router.use(bodyParser.json());
 
+const LIMIT_LEN = 5;
+
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, 'public/images/uploads');
@@ -23,12 +25,13 @@ const upload = multer({storage: storage});
 /* GET home page. */
 router.get('/', function(req, res) {
 
-  User.find().sort({date : -1}).exec((err,users)=>{
+  let user = {_id:"1",name:"없음", img:"", tag:["없음"]};
+  User.find({}).sort({date : -1}).skip(0).limit(LIMIT_LEN).exec((err,users)=>{
       if(err) res.status(500).json(err);
       if(!users.length) {
-          res.render('index',{err:"Not found users", user: {_id:"1",name:"없음", img:"", tag:["없음"]}});
+          res.render('index',{err:"Not found users", user: user});
       }else{
-          res.render('index', {users : users, user: users[0]});
+          res.render('index', {users : users, user: user});
       }
   });
 
@@ -67,9 +70,14 @@ router.get("/:id",(req,res)=>{
     User.find({_id:id},(err,user)=>{
         if(err) res.status(500).json(err);
         if(!user.length) res.json({err:"Not found user"});
-        res.json(user[0]);
+        else {
+            res.json(user[0]);
+        }
     });
 });
+
+
+
 
 
 router.delete("/:id",(req,res)=>{
@@ -80,6 +88,21 @@ router.delete("/:id",(req,res)=>{
     });
 });
 
+
+router.get("/plus/:len",(req,res)=>{
+
+    let {len} =  req.params;
+    len = len * 1;
+    User.find({}).sort({date : -1}).skip(len).limit(LIMIT_LEN).exec((err,users)=>{
+        if(err) res.status(500).json(err);
+        if(!users.length) {
+            res.json({err:"Not found user"});
+        }else{
+            res.json(users);
+        }
+
+    });
+});
 
 
 

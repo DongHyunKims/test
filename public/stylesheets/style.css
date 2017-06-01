@@ -57,27 +57,25 @@ body {
 #wrap {
   width: 100%;
   height: 100%;
-  border: 1px solid red;
 }
 
 
 .registerArea {
   width: 100%;
   height: 40%;
-  border: 1px solid blue;
+  border-bottom: 1px solid black;
 }
 
 .imgArea{
-  width:  calc(30% - 5px);
+  width: 30%;
   height: 100%;
-  border: 1px solid green;
   float: left;
+  border-right: 1px solid black;
 }
 
 .imgTest{
   width: 30%;
   height: 40%;
-  border: 1px solid orange;
 
 }
 
@@ -87,17 +85,15 @@ body {
 }
 
 .formArea{
-  width: 70%;
+  width: calc(70% - 1px);
   height: 100%;
-  border: 1px solid powderblue;
   float: left;
 }
 
 
 .detailArea{
   width: 100%;
-  height: calc(60% - 3px);
-  border: 1px solid powderblue;
+  height: 60%;
   float: left;
 }
 
@@ -118,17 +114,19 @@ body {
 }
 
 
+#addName {
+  background-color: antiquewhite;
+}
+
 .userDetail{
   width: calc(70% - 1px);
   height: 100%;
   float: right;
-  background-color: aqua;
 }
 
 .userDetailImg{
   width: 100%;
   height: 50%;
-  background-color: palevioletred;
 }
 
 

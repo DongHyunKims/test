@@ -41,14 +41,16 @@
                <%= users[i].name %>
             </li>
             <% } %>
+            <li id="addName" >
+                 더 보기
+            </li>
           <% }else{ %>
-                <%= err %>
+                등록 되지 않았습니다.
           <% } %>
         </ul>
 
 
         <div class="userDetail">
-
             <input type="hidden" id="userId" value="<%= user._id %>"/>
             <div class="userDetailImg">
               <img src="<%= user.img %>" />
@@ -66,6 +68,7 @@
             <input type="button" value="삭제" class="deleteBtn" />
 
 
+
         </div>
 
       </div>
@@ -78,28 +81,7 @@
     <script src="/javascripts/utility.js"></script>
     <script src="/javascripts/index.js"></script>
 
-    <script type="template" id="nameListTemplate">
 
-        {{nameList}}
-
-    </script>
-
-
-
-    <script type="template" id="userDetailTemplate">
-      <input type="hidden" id="userId" value={{id}}/>
-      <div class="userDetailImg">
-        <img src={{imgUrl}} />
-      </div>
-      <p> <h2>{{name}}</h2> </p>
-      <div class="userDetailTag">
-        <ul class="tagArea">
-          {{tagList}}
-        </ul>
-      </div>
-      <input type="button" value="삭제" class="deleteBtn"/>
-
-    </script>
 
   </body>
 </html>

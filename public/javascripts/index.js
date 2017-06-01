@@ -2,12 +2,11 @@
  * Created by donghyunkim on 2017. 6. 1..
  */
 (function(){
-        let preId = "";
-        let users=null;
-        const MAX_SIZE = 2 * 1024 * 1000;
-        const TAG_MAX_LEN = 5;
-        const TAG_STR_MAX_LEN = 10;
-
+    let preId = "1";
+    const MAX_SIZE = 2 * 1024 * 1000;
+    const TAG_MAX_LEN = 5;
+    const TAG_STR_MAX_LEN = 10;
+    const INIT_DATA = {_id:"1",name:"없음", img:"", tag:["없음"]}
     const REG_ALPHA = /^[A-Za-z]*$/;
 
 
@@ -24,22 +23,21 @@
             userDetailName : $(".userDetailName"),
             tagArea : $(".tagArea"),
             userId : $("#userId"),
+            addName : $("#addName"),
         };
 
 
-        let { nameInput,tagInput,fileInput,nameListArea,submitBtn,userDetail,deleteBtn,previewImg ,userDetailImg,userDetailName,tagArea,userId } = elements;
+        const { nameInput,tagInput,fileInput,nameListArea,submitBtn,userDetail,deleteBtn,previewImg ,userDetailImg,userDetailName,tagArea,userId, addName } = elements;
 
 
         fileInput.on("change",()=>{
-            const file = fileInput.prop("files")[0];
-            const reader = new FileReader();
+            let file = fileInput.prop("files")[0];
+            let reader = new FileReader();
+            let { size,type} = file;
+            console.log(type);
 
-            //console.log("file",file);
-
-            let { size } = file;
-
-            if(size > MAX_SIZE){
-                alert("2MB 보다 작은 파일을 업로드 하세요.");
+            if(size > MAX_SIZE || !type.match("image")){
+                alert("2MB 보다 작은 파일을 업로드 하거나 이미지 파일을 업로드 하세요.");
                 fileInput.val("");
                 return;
             }
@@ -58,7 +56,7 @@
 
         submitBtn.on("click",()=>{
             //fileInput
-            const data = {};
+            let data = {};
             data.name = nameInput.val();
             data.tag = tagInput.val();
 
@@ -67,23 +65,21 @@
                 tagInput.val("");
                 return;
             }
-
             data.img = fileInput.prop("files")[0];
-
-            const formData = utility.createFormData(data);
+            let formData = utility.createFormData(data);
             utility.runAjaxData(reqListener,"POST",config.DEFAULT_URL + "/",formData);
 
         });
+
         function tagValidation(tag){
 
-            const tagArr = tag.split(",");
+            let tagArr = tag.split(",");
 
             if(tagArr.length > TAG_MAX_LEN) {
                 return true;
             }
 
             let len = tagArr.filter((val)=>{
-
                 return !REG_ALPHA.test(val) || val.length > TAG_STR_MAX_LEN || val === "";
             }).length;
 
@@ -103,48 +99,46 @@
             fileInput.val("");
             previewImg.attr("src","");
 
-            const { response } = res.currentTarget;
+            let { response } = res.currentTarget;
+            let data = JSON.parse(response);
+            let {_id , name } = data;
+            let liElements = $(".nameListArea li");
+            let len = liElements.length;
 
-            const user = JSON.parse(response);
-            const {_id , name } = user;
-            const liElement = $(".nameListArea li");
-
-            if(liElement.length){
-                const firstLiElement = $(".nameListArea li:nth-child(1)");
+            if(len){
+                let firstLiElement = $(".nameListArea li:nth-child(1)");
                 firstLiElement.before("<li id=" + _id + " class=userName >" + name+ "</li>");
             }else{
                 nameListArea.empty();
-                nameListArea.append("<li id=" + _id + " class=userName >" + name+ "</li>")
-                preId = _id;
+                nameListArea.append("<li id=" + _id + " class=userName >" + name+ "</li><li id=addName>더보기</li>");
             }
-
-            utility.runAjax(getUserListener,"GET",config.DEFAULT_URL + "/" + preId);
-
-
         }
 
         nameListArea.on("click", (event)=>{
 
             let { target } = event;
             let { nodeName , id} = target;
-            const liElement = $(".nameListArea li");
+            let liElements = $(".nameListArea li");
 
 
-            $.each(liElement,(idx,val)=>{
-                console.log(val);
-                val.style.backgroundColor = "white";
-            });
+            let len = liElements.length-1;
 
             if(nodeName === "LI"){
                 if(id === "addName" ){
-
-
-                }else{
-                    target.style.backgroundColor = "lightgray";
-                    preId = target.id;
-                    if(preId==="1"){
+                    if(len < 5){
                         return;
                     }
+                    utility.runAjax(getMoreUserListener,"GET",config.DEFAULT_URL + "/plus/" + len);
+
+                }else{
+
+                    if(preId !== "1") {
+                        $("#" + preId).css({"background-color" : "white"});
+                    }
+
+                    target.style.backgroundColor = "lightgray";
+                    preId = target.id;
+
                     utility.runAjax(getUserListener,"GET",config.DEFAULT_URL + "/" + preId);
                 }
 
@@ -154,22 +148,32 @@
 
 
 
+        function getMoreUserListener(res){
+
+            let { response } = res.currentTarget;
+            let data = JSON.parse(response);
+
+            if(data.err){
+                return;
+            }
+
+
+            let plusUsers = data.map((val)=>{
+                let {_id , name} = val;
+                return "<li id=" + _id + " class=userName >" + name+ "</li>"
+            }).join("");
+
+            $("#addName").before(plusUsers);
+
+
+        }
+
+
         function getUserListener(res){
 
-
-            const { response } = res.currentTarget;
-            const user = JSON.parse(response);
-            const {img, tag, name, _id} = user;
-
-            userId.val(_id);
-            userDetailImg.attr("src",img);
-            userDetailName.text(name);
-            tagArea.empty();
-            tag.forEach((val)=>{
-                tagArea.append("<li class=tag >" + val + "</li>");
-            });
-
-
+            let { response } = res.currentTarget;
+            let data = JSON.parse(response);
+            detailInit(data);
 
         }
 
@@ -189,31 +193,41 @@
 
         function deleteUserListener(id,res){
 
-
-
-            const removeElement = $("#" +id);
+            let removeElement = $("#" +id);
             removeElement.remove();
 
-            const liElement = $(".nameListArea li");
-            if(liElement.length){
+            let liElements = $(".nameListArea li");
+            if(liElements.length > 1){
                 const firstLiElement = $(".nameListArea li:nth-child(1)");
                 const id = firstLiElement.attr("id");
+                preId = id;
                 firstLiElement.css({"background-color" : "lightgray"});
                 utility.runAjax(getUserListener,"GET",config.DEFAULT_URL + "/" + id);
             }else{
                 preId = "1";
-                userId.val(preId);
-                userDetailImg.attr("src","");
-                userDetailName.text("없음");
-                tagArea.empty();
-                let tag = ["없음"];
-                tag.forEach((val)=>{
-                    tagArea.append("<li class=tag >" + val + "</li>");
-                });
+
+                detailInit(INIT_DATA);
+                $("#addName").remove();
+                nameListArea.append("등록 되지 않았습니다.");
 
             }
 
         }
+
+
+        function detailInit(data) {
+            let {img,tag,_id, name} = data;
+            userId.val(_id);
+            userDetailImg.attr("src",img);
+            userDetailName.text(name);
+            tagArea.empty();
+            let newTags = tag.map((val)=>{
+                return "<li class=tag >" + val + "</li>";
+            }).join("");
+            tagArea.append(newTags);
+
+        }
+
 
 
 
