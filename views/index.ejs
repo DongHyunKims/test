@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div id="wrap">
+      <div class="registerArea">
+        <div class="imgArea">
+          <div class="imgTest">
+            <img src="" id="previewImg" />
+          </div>
+
+          <input class="fileInput" type="file" name="imgFile"  />
+
+        </div>
+
+
+        <div class="formArea">
+          <label>Name</label>
+          <input type="text" maxlength="10" class="nameInput" name="nameText" />
+          <label>Tag</label>
+          <input type="text" class="tagInput" name="tagText" />
+          <input type="button" value="등록" id="submitBtn" />
+        </div>
+
+
+      </div>
+
+
+      <div class="detailArea">
+
+        <ul class="nameListArea">
+
+          <%
+            var err = err;
+            if(!err) {
+            for(let i = 0; i < users.length; i++) { %>
+            <li class="userName" id="<%= users[i]._id %>">
+               <%= users[i].name %>
+            </li>
+            <% } %>
+          <% }else{ %>
+                <%= err %>
+          <% } %>
+        </ul>
+
+
+        <div class="userDetail">
+            <%
+            if (!err) {
+            %>
+            <input type="hidden" id="userId" value="<%= user._id %>"/>
+            <div class="userDetailImg">
+              <img src="<%= user.img %>" />
+            </div>
+
+            <p><h2><%= user.name %></h2></p>
+
+            <div class="userDetailTag">
+              <ul class="tagArea">
+                  <% for(let i = 0; i < user.tag.length; i++) { %>
+                    <li class="tag">
+                      <%= user.tag[i] %>
+                    </li>
+
+                  <% } %>
+              </ul>
+            </div>
+
+
+            <input type="button" value="삭제" class="deleteBtn" />
+          <%
+          }else{
+          %>
+
+            <div>
+                이름을 선택해 주세요!
+            </div>
+          <%
+          }
+          %>
+
+
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+    <script src="/javascripts/config.js"></script>
+    <script src="/javascripts/utility.js"></script>
+    <script src="/javascripts/index.js"></script>
+
+    <script type="template" id="nameListTemplate">
+
+        {{nameList}}
+
+    </script>
+
+
+
+    <script type="template" id="userDetailTemplate">
+      <input type="hidden" id="userId" value={{id}}/>
+      <div class="userDetailImg">
+        <img src={{imgUrl}} />
+      </div>
+      <p> <h2>{{name}}</h2> </p>
+      <div class="userDetailTag">
+        <ul class="tagArea">
+          {{tagList}}
+        </ul>
+      </div>
+      <input type="button" value="삭제" class="deleteBtn"/>
+
+    </script>
+
+  </body>
+</html>
