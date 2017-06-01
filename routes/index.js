@@ -26,7 +26,7 @@ router.get('/', function(req, res) {
   User.find().sort({date : -1}).exec((err,users)=>{
       if(err) res.status(500).json(err);
       if(!users.length) {
-          res.render('index',{err:"Not found users"});
+          res.render('index',{err:"Not found users", user: {_id:"1",name:"없음", img:"", tag:["없음"]}});
       }else{
           res.render('index', {users : users, user: users[0]});
       }
@@ -49,27 +49,21 @@ router.post("/",upload.single("img"),(req,res)=>{
   let user = new User(data);
 
     user.save()
-        .then(()=>{
-            return User.find().sort({date : -1});
+        .then((user)=>{
+        console.log("user",user);
+
+        res.json(user);
+            //return User.find().sort({date : -1});
         })
         .catch((err)=>{
             res.status(500).json(err);
-        })
-        .then((users)=>{
-            if(!users.length) res.json({err:"Not found users"});
-            res.json(users);
-        })
-        .catch((err)=>{
-            res.status(500).json(err);
-        })
+        });
 
 });
 
 
 router.get("/:id",(req,res)=>{
     const {id} =  req.params;
-
-
     User.find({_id:id},(err,user)=>{
         if(err) res.status(500).json(err);
         if(!user.length) res.json({err:"Not found user"});
@@ -80,8 +74,6 @@ router.get("/:id",(req,res)=>{
 
 router.delete("/:id",(req,res)=>{
     const {id} =  req.params;
-
-
     User.findOneAndRemove({_id:id},(err, doc)=>{
         if(err) res.status(500).json(err);
         res.json(doc);

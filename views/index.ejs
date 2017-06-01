@@ -48,37 +48,22 @@
 
 
         <div class="userDetail">
-            <%
-            if (!err) {
-            %>
+
             <input type="hidden" id="userId" value="<%= user._id %>"/>
             <div class="userDetailImg">
               <img src="<%= user.img %>" />
             </div>
-
-            <p><h2><%= user.name %></h2></p>
-
+            <p class="userDetailName"><%= user.name %></p>
             <div class="userDetailTag">
               <ul class="tagArea">
                   <% for(let i = 0; i < user.tag.length; i++) { %>
-                    <li class="tag">
-                      <%= user.tag[i] %>
-                    </li>
-
+                  <li class="tag">
+                    <%= user.tag[i] %>
+                  </li>
                   <% } %>
               </ul>
             </div>
             <input type="button" value="삭제" class="deleteBtn" />
-          <%
-          }else{
-          %>
-
-            <div>
-                이름을 선택해 주세요!
-            </div>
-          <%
-          }
-          %>
 
 
         </div>
