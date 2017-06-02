@@ -3,7 +3,7 @@
  */
 (function(){
     let preId = "1";
-    const WEBHOOK_URL = "https://hooks.slack.com/services/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"
+
     const MAX_SIZE = 2 * 1024 * 1000;
     const TAG_MAX_LEN = 5;
     const TAG_STR_MAX_LEN = 10;
@@ -103,19 +103,6 @@
                 nameListArea.append("<li id=" + _id + " class=userName >" + name+ "</li><li id=addName>더보기</li>");
             }
 
-            let payloadData = {
-                "username" : "dhkim",
-                "icon_url" : img,
-                "text" : name + " 사용자가 추가되었습니다.",
-            };
-
-            $.ajax({
-                data: 'payload=' + JSON.stringify(payloadData),
-                dataType: 'json',
-                processData: false,
-                type: 'POST',
-                url: WEBHOOK_URL
-            });
         }
 
         nameListArea.on("click", (event)=>{
