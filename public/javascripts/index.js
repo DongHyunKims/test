@@ -45,7 +45,7 @@
             if (file) {
                 reader.readAsDataURL(file);
             }else{
-                previewImg.attr("src","");
+                previewImg.attr("src",null);
             }
         });
 
@@ -53,14 +53,19 @@
             let data = {};
             data.name = nameInput.val();
             data.tag = tagInput.val();
+            data.img = fileInput.prop("files")[0];
 
             if(tagValidation(data.tag)){
-                alert("tag는 최대 5개, 영어만 가능, 태그하나 당 최대 10글자");
+                alert("tag는 최대 5개, 영어만 가능, 태그하나 당 최대 10글자입니다.");
                 tagInput.val("");
                 return;
             }
 
-            data.img = fileInput.prop("files")[0];
+            if(!data.img){
+                alert("이미지를 넣어주세요.");
+                return;
+            }
+
             let formData = utility.createFormData(data);
             utility.runAjaxData(reqListener,"POST",config.DEFAULT_URL + "/",formData);
         });
@@ -88,7 +93,7 @@
             previewImg.attr("src","");
             let { response } = res.currentTarget;
             let data = JSON.parse(response);
-            let {_id , name } = data;
+            let { _id, name } = data;
             let liElements = $(".nameListArea li");
             const len = liElements.length;
 
@@ -104,7 +109,7 @@
 
         nameListArea.on("click", (event)=>{
             let { target } = event;
-            let { nodeName , id} = target;
+            let { nodeName, id} = target;
             let liElements = $(".nameListArea li");
             let len = liElements.length-1;
             let lastId = $(".nameListArea li:nth-child("+len+")").attr("id");

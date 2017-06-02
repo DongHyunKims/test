@@ -19,7 +19,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-
 router.get('/', function(req, res) {
   let user = {_id:"1",name:"없음", img:"", tag:["없음"]};
   User.find({}).sort({date : -1}).skip(0).limit(LIMIT_LEN).exec((err,users)=>{
@@ -27,12 +26,7 @@ router.get('/', function(req, res) {
       if(!users.length) {
           res.render('index',{err:"Not found users", user: user});
       }else{
-          User.count({},(err,doc)=>{
-              if(err) res.status(500).json(err);
-              count =
-              res.render('index', {users : users, user: user});
-          })
-
+          res.render('index', {users : users, user: user});
       }
   });
 });
@@ -88,7 +82,7 @@ router.delete("/:id",(req,res)=>{
     const {id} =  req.params;
 
     User.findOneAndRemove({_id:id},(err, doc)=>{
-        if(err) res.status(500).json(err);;
+        if(err) res.status(500).json(err);
         res.json(doc);
     });
 });
@@ -96,7 +90,7 @@ router.delete("/:id",(req,res)=>{
 router.get("/more/:id",(req,res)=>{
     let { id } = req.params;
 
-    User.find({_id: {$lt: id}}).sort({date : -1}).limit(LIMIT_LEN).exec((err,users)=> {
+    User.find({_id: {$lt: id}}).sort({date : -1}).limit(LIMIT_LEN).exec((err,users)=>{
         if(err) res.status(500).json(err);
         if(users) {
             if (!users.length) {
