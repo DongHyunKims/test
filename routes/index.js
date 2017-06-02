@@ -5,7 +5,6 @@ const multer = require("multer");
 const bodyParser = require('body-parser');
 const User = require("../database/model/user");
 const WEBHOOK_URL = "https://hooks.slack.com/services/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";
-
 router.use(express.static('public'));
 router.use(bodyParser.urlencoded({extended : true}));
 router.use(bodyParser.json());
@@ -20,16 +19,20 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-/* GET home page. */
+
 router.get('/', function(req, res) {
   let user = {_id:"1",name:"없음", img:"", tag:["없음"]};
-
   User.find({}).sort({date : -1}).skip(0).limit(LIMIT_LEN).exec((err,users)=>{
       if(err) res.status(500).json(err);
       if(!users.length) {
           res.render('index',{err:"Not found users", user: user});
       }else{
-          res.render('index', {users : users, user: user});
+          User.count({},(err,doc)=>{
+              if(err) res.status(500).json(err);
+              count =
+              res.render('index', {users : users, user: user});
+          })
+
       }
   });
 });
@@ -48,9 +51,8 @@ router.post("/",upload.single("img"),(req,res)=>{
 
   user.save()
       .then((user)=>{
+          res.json(user);
           requestSender(createWebhookOption(payloadData),(err, response, body)=>{
-              if(err)  res.status(500).json(err);
-              res.json(user);
           });
       })
       .catch((err)=>{
@@ -65,7 +67,6 @@ function createWebhookOption(payloadData){
         body: payloadData,
         json: true
     };
-
 }
 
 router.get("/:id",(req,res)=>{
@@ -76,6 +77,7 @@ router.get("/:id",(req,res)=>{
         if(user) {
             if (!user.length) res.json({err: "Not found user"});
             else {
+                console.log(user[0]);
                 res.json(user[0]);
             }
         }
@@ -86,22 +88,23 @@ router.delete("/:id",(req,res)=>{
     const {id} =  req.params;
 
     User.findOneAndRemove({_id:id},(err, doc)=>{
-        if(err) res.status(500).json(err);
+        if(err) res.status(500).json(err);;
         res.json(doc);
     });
 });
 
-router.get("/plus/:len",(req,res)=>{
-    let {len} =  req.params;
-    len = len * 1;
+router.get("/more/:id",(req,res)=>{
+    let { id } = req.params;
 
-    User.find({}).sort({date : -1}).skip(len).limit(LIMIT_LEN).exec((err,users)=>{
+    User.find({_id: {$lt: id}}).sort({date : -1}).limit(LIMIT_LEN).exec((err,users)=> {
         if(err) res.status(500).json(err);
-        if(!users.length) {
-            res.json({err:"Not found user"});
-        }else{
-            res.json(users);
-        }
+        if(users) {
+            if (!users.length) {
+                res.json({err: "Not found user"});
+            } else {
+                res.json(users);
+            }
+         }
     });
 });
 

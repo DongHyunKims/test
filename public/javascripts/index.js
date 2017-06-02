@@ -1,9 +1,9 @@
 /**
  * Created by donghyunkim on 2017. 6. 1..
  */
+
 (function(){
     let preId = "1";
-
     const MAX_SIZE = 2 * 1024 * 1000;
     const TAG_MAX_LEN = 5;
     const TAG_STR_MAX_LEN = 10;
@@ -55,7 +55,7 @@
             data.tag = tagInput.val();
 
             if(tagValidation(data.tag)){
-                alert("tag를 다시 작성하세요");
+                alert("tag는 최대 5개, 영어만 가능, 태그하나 당 최대 10글자");
                 tagInput.val("");
                 return;
             }
@@ -71,15 +71,13 @@
             if(tagArr.length > TAG_MAX_LEN) {
                 return true;
             }
-
             let len = tagArr.filter((val)=>{
                 return !REG_ALPHA.test(val) || val.length > TAG_STR_MAX_LEN || val === "";
             }).length;
 
-            if (len){
+            if(len){
                 return true;
             }
-
             return false;
         }
 
@@ -88,12 +86,11 @@
             tagInput.val("");
             fileInput.val("");
             previewImg.attr("src","");
-
             let { response } = res.currentTarget;
             let data = JSON.parse(response);
-            let {_id , name, img } = data;
+            let {_id , name } = data;
             let liElements = $(".nameListArea li");
-            let len = liElements.length;
+            const len = liElements.length;
 
             if(len){
                 let firstLiElement = $(".nameListArea li:nth-child(1)");
@@ -110,12 +107,12 @@
             let { nodeName , id} = target;
             let liElements = $(".nameListArea li");
             let len = liElements.length-1;
+            let lastId = $(".nameListArea li:nth-child("+len+")").attr("id");
 
             if(nodeName === "LI"){
                 if(id === "addName" ){
-                    utility.runAjax(getMoreUserListener,"GET",config.DEFAULT_URL + "/plus/" + len);
+                    utility.runAjax(getMoreUserListener,"GET",config.DEFAULT_URL + "/more/" + lastId);
                 }else{
-
                     if(preId !== "1") {
                         $("#" + preId).css({"background-color" : "white"});
                     }
@@ -123,7 +120,6 @@
                     preId = target.id;
                     utility.runAjax(getUserListener,"GET",config.DEFAULT_URL + "/" + preId);
                 }
-
             }
         });
 
@@ -135,11 +131,11 @@
                 return;
             }
 
-            let plusUsers = data.map((val)=>{
+            let moreUsers = data.map((val)=>{
                 let {_id , name} = val;
                 return "<li id=" + _id + " class=userName >" + name+ "</li>"
             }).join("");
-            $("#addName").before(plusUsers);
+            $("#addName").before(moreUsers);
         }
 
         function getUserListener(res){
@@ -167,8 +163,13 @@
             let removeElement = $("#" +_id);
             removeElement.remove();
             let liElements = $(".nameListArea li");
+            const len = liElements.length;
+            let lastId = $(".nameListArea li:nth-child("+(len-1)+")").attr("id");
 
-            if(liElements.length > 1){
+            if(len > 1){
+                if(len === 2){
+                    utility.runAjax(getMoreUserListener,"GET",config.DEFAULT_URL + "/more/" + lastId);
+                }
                 let firstLiElement = $(".nameListArea li:nth-child(1)");
                 let id = firstLiElement.attr("id");
                 preId = id;
@@ -179,7 +180,6 @@
                 detailInit(INIT_DATA);
                 $("#addName").remove();
                 nameListArea.append("등록 되지 않았습니다.");
-
             }
         }
 
