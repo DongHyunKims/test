@@ -54,6 +54,10 @@ body {
 }
 
 
+input[type="button"] {
+  cursor: pointer;
+}
+
 #wrap {
   width: 100%;
   height: 100%;
@@ -73,15 +77,11 @@ body {
   border-right: 1px solid black;
 }
 
-.imgTest{
+
+
+#previewImg {
   width: 30%;
   height: 40%;
-
-}
-
-.imgTest > img{
-  width: 100%;
-  height: 100%;
 }
 
 .formArea{
@@ -110,6 +110,8 @@ body {
   height: 15%;
   border-bottom: 1px solid black;
   cursor: pointer;
+  text-align: center;
+  line-height: 5em;
 
 }
 
@@ -124,11 +126,15 @@ body {
   float: right;
 }
 
-.userDetailImg{
+.userDetailImg {
+  text-align: center;
   width: 100%;
   height: 50%;
 }
 
+.userDetailName {
+  text-align: center;
+}
 
 .userDetailImg > img{
   width: 30%;

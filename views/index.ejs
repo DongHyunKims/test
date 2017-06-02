@@ -8,21 +8,18 @@
     <div id="wrap">
       <div class="registerArea">
         <div class="imgArea">
-          <div class="imgTest">
-            <img src="" id="previewImg" />
-          </div>
-
-          <input class="fileInput" type="file" name="imgFile"  />
+            <img src="" id="previewImg" /><br/>
+            <input class="fileInput" type="file" name="imgFile"  />
 
         </div>
 
 
         <div class="formArea">
-          <label>Name</label>
-          <input type="text" maxlength="10" class="nameInput" name="nameText" />
-          <label>Tag</label>
-          <input type="text" class="tagInput" name="tagText" />
-          <input type="button" value="등록" id="submitBtn" />
+            <label>Name</label>
+            <input type="text" maxlength="10" class="nameInput" name="nameText" /><br/>
+            <label>Tag</label>
+            <input type="text" class="tagInput" name="tagText" /><br/>
+            <input type="button" value="등록" id="submitBtn" />
         </div>
 
 
@@ -52,10 +49,13 @@
 
         <div class="userDetail">
             <input type="hidden" id="userId" value="<%= user._id %>"/>
+
             <div class="userDetailImg">
               <img src="<%= user.img %>" />
             </div>
+            <hr/>
             <p class="userDetailName"><%= user.name %></p>
+            <hr/>
             <div class="userDetailTag">
               <ul class="tagArea">
                   <% for(let i = 0; i < user.tag.length; i++) { %>
@@ -65,6 +65,8 @@
                   <% } %>
               </ul>
             </div>
+            <br/>
+            <br/>
             <input type="button" value="삭제" class="deleteBtn" />
 
 

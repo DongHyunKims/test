@@ -119,8 +119,6 @@
             let { target } = event;
             let { nodeName , id} = target;
             let liElements = $(".nameListArea li");
-
-
             let len = liElements.length-1;
 
             if(nodeName === "LI"){
@@ -152,11 +150,9 @@
 
             let { response } = res.currentTarget;
             let data = JSON.parse(response);
-
             if(data.err){
                 return;
             }
-
 
             let plusUsers = data.map((val)=>{
                 let {_id , name} = val;
@@ -185,27 +181,31 @@
                 if(id==="1"){
                     return;
                 }else {
-                    utility.runAjax(deleteUserListener.bind(null, id), "DELETE", config.DEFAULT_URL + "/" + id);
+                    utility.runAjax(deleteUserListener, "DELETE", config.DEFAULT_URL + "/" + id);
                 }
             }
         });
 
 
-        function deleteUserListener(id,res){
+        function deleteUserListener(res){
 
-            let removeElement = $("#" +id);
+            let { response } = res.currentTarget;
+            let data = JSON.parse(response);
+
+            let { _id } = data;
+
+            let removeElement = $("#" +_id);
             removeElement.remove();
 
             let liElements = $(".nameListArea li");
             if(liElements.length > 1){
-                const firstLiElement = $(".nameListArea li:nth-child(1)");
-                const id = firstLiElement.attr("id");
+                let firstLiElement = $(".nameListArea li:nth-child(1)");
+                let id = firstLiElement.attr("id");
                 preId = id;
                 firstLiElement.css({"background-color" : "lightgray"});
                 utility.runAjax(getUserListener,"GET",config.DEFAULT_URL + "/" + id);
             }else{
                 preId = "1";
-
                 detailInit(INIT_DATA);
                 $("#addName").remove();
                 nameListArea.append("등록 되지 않았습니다.");
